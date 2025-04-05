@@ -41,7 +41,7 @@ class VerseController extends Controller
         }
 
         if ($withHighlights) {
-            $query->with('highlights');
+            $query->with('highlights.highlightGroup');
         }
 
         if ($withUnderlines) {
@@ -50,6 +50,18 @@ class VerseController extends Controller
 
         $result = $query->get();
 
-        return response()->json(["success" => true, "data" => $result]);
+        // Transform the data to include only the color attribute
+        $transformedResult = $result->map(function ($verse) {
+            $verse->highlights->transform(function ($highlight) {
+                if ($highlight->highlightGroup) {
+                    $highlight->color = $highlight->highlightGroup->color;
+                }
+                unset($highlight->highlightGroup);
+                return $highlight;
+            });
+            return $verse;
+        });
+
+        return response()->json(["success" => true, "data" => $transformedResult]);
     }
 }

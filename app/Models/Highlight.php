@@ -10,4 +10,9 @@ class Highlight extends Model
     {
         return $this->belongsTo(Verse::class);
     }
+
+    public function highlightGroup()
+    {
+        return $this->belongsTo(HighlightGroup::class);
+    }
 }
