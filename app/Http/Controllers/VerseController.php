@@ -37,6 +37,7 @@ class VerseController extends Controller
         }
 
         if ($chapter) {
+            $query->select('id', 'number_in_chapter', 'page', 'chapter_id');
             $query->where('chapter_id', $chapter);
         }
 
@@ -50,18 +51,22 @@ class VerseController extends Controller
 
         $result = $query->get();
 
-        // Transform the data to include only the color attribute
-        $transformedResult = $result->map(function ($verse) {
-            $verse->highlights->transform(function ($highlight) {
-                if ($highlight->highlightGroup) {
-                    $highlight->color = $highlight->highlightGroup->color;
-                }
-                unset($highlight->highlightGroup);
-                return $highlight;
+        $result = $result->when($withHighlights, function ($collection) {
+            return $collection->map(function ($verse) {
+                $verse->highlights->transform(function ($highlight) {
+                    if ($highlight->highlightGroup) {
+                        $highlight->color = $highlight->highlightGroup->color;
+                    }
+                    unset($highlight->highlightGroup);
+                    return $highlight;
+                });
+                return $verse;
             });
-            return $verse;
         });
 
-        return response()->json(["success" => true, "data" => $transformedResult]);
+        return response()->json([
+            "success" => true,
+            "data" => $result,
+        ]);
     }
 }
