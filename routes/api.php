@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChapterController;
+use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\JuzController;
 use App\Http\Controllers\UnderlineController;
 use App\Http\Controllers\VerseController;
@@ -20,3 +21,5 @@ Route::get('/juz', [JuzController::class, 'index']);
 Route::get('/verses', [VerseController::class, 'index']);
 
 Route::get('/underlines/{id}', [UnderlineController::class, 'show']);
+
+Route::get('/highlights/{id}', [HighlightController::class, 'show']);
